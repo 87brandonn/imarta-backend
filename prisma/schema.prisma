@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Module {
+  id       Int       @id @default(autoincrement())
+  slug     String    @unique
+  name     String
+  sections Section[]
+}
+
+model Section {
+  id         Int         @id @default(autoincrement())
+  label      String
+  name       String
+  module     Module      @relation(fields: [moduleId], references: [id])
+  moduleId   Int
+  attributes Attribute[]
+
+  @@unique([name, moduleId])
+}
+
+model Attribute {
+  id        Int           @id @default(autoincrement())
+  name      String
+  label     String
+  type      AttributeType
+  data      Json?
+  section   Section       @relation(fields: [sectionId], references: [id])
+  sectionId Int
+
+  @@unique([name, sectionId])
+}
+
+model Period {
+  id                Int                @id @default(autoincrement())
+  label             String             @unique
+  workPrograms      WorkProgram[]
+  organizationMetas OrganizationMeta[]
+}
+
+model Department {
+  id                     Int                     @id @default(autoincrement())
+  name                   String                  @unique
+  leader                 String?
+  workProgramDepartments WorkProgramDepartment[]
+}
+
+model Field {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  leader            String?
+  workProgramFields WorkProgramField[]
+}
+
+model WorkProgram {
+  id                       Int                        @id @default(autoincrement())
+  period                   Period?                    @relation(fields: [periodId], references: [id])
+  periodId                 Int?
+  name                     String
+  description              String?
+  startDate                DateTime?
+  endDate                  DateTime?
+  participationCount       Int?
+  collaborators            String?
+  staffs                   String?
+  workProgramDepartments   WorkProgramDepartment[]
+  workProgramFields        WorkProgramField[]
+  WorkProgramDocumentation WorkProgramDocumentation[]
+}
+
+model WorkProgramDepartment {
+  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id])
+  workProgramId Int
+  department    Department  @relation(fields: [departmentId], references: [id])
+  departmentId  Int
+
+  @@unique([workProgramId, departmentId])
+}
+
+model WorkProgramField {
+  work          WorkProgram @relation(fields: [workProgramId], references: [id])
+  workProgramId Int
+  field         Field       @relation(fields: [fieldId], references: [id])
+  fieldId       Int
+
+  @@unique([workProgramId, fieldId])
+}
+
+model WorkProgramDocumentation {
+  id            Int         @id @default(autoincrement())
+  imgUrl        String
+  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id])
+  workProgramId Int
+}
+
+model OrganizationMeta {
+  id                       Int                       @id @default(autoincrement())
+  period                   Period                    @relation(fields: [periodId], references: [id])
+  periodId                 Int
+  vision                   String
+  hierarchyImgUrl          String
+  organizationMetaMissions OrganizationMetaMission[]
+}
+
+model OrganizationMetaMission {
+  id                 Int              @id @default(autoincrement())
+  organizationMeta   OrganizationMeta @relation(fields: [organizationMetaId], references: [id])
+  organizationMetaId Int
+  value              String
+  number             Int
+}
+
+enum AttributeType {
+  TITLE
+  SUBTITLE
+  TEXT
+  SWIPER_CENTERED
+  SWIPER_NORMAL
+  IMAGE_BIG
+  IMAGE_SMALL
+  IMAGE_GRID
+  HERO
+  HOME_EVENTS
+}
