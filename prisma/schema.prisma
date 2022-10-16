@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -11,10 +12,12 @@ datasource db {
 }
 
 model Module {
-  id       Int       @id @default(autoincrement())
-  slug     String    @unique
-  name     String
-  sections Section[]
+  id        Int       @id @default(autoincrement())
+  slug      String    @unique
+  name      String
+  sections  Section[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Section {
@@ -24,6 +27,8 @@ model Section {
   module     Module      @relation(fields: [moduleId], references: [id])
   moduleId   Int
   attributes Attribute[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   @@unique([name, moduleId])
 }
@@ -36,15 +41,19 @@ model Attribute {
   data      Json?
   section   Section       @relation(fields: [sectionId], references: [id])
   sectionId Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@unique([name, sectionId])
 }
 
 model Period {
-  id                Int                @id @default(autoincrement())
-  label             String             @unique
-  workPrograms      WorkProgram[]
-  organizationMetas OrganizationMeta[]
+  id               Int               @id @default(autoincrement())
+  label            String            @unique
+  workPrograms     WorkProgram[]
+  organizationMeta OrganizationMeta?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Department {
@@ -52,6 +61,8 @@ model Department {
   name                   String                  @unique
   leader                 String?
   workProgramDepartments WorkProgramDepartment[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
 model Field {
@@ -59,38 +70,46 @@ model Field {
   name              String             @unique
   leader            String?
   workProgramFields WorkProgramField[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 model WorkProgram {
-  id                       Int                        @id @default(autoincrement())
-  period                   Period?                    @relation(fields: [periodId], references: [id])
-  periodId                 Int?
-  name                     String
-  description              String?
-  startDate                DateTime?
-  endDate                  DateTime?
-  participationCount       Int?
-  collaborators            String?
-  staffs                   String?
-  workProgramDepartments   WorkProgramDepartment[]
-  workProgramFields        WorkProgramField[]
-  WorkProgramDocumentation WorkProgramDocumentation[]
+  id                        Int                        @id @default(autoincrement())
+  period                    Period?                    @relation(fields: [periodId], references: [id])
+  periodId                  Int?
+  name                      String
+  description               String?                    @db.Text()
+  startDate                 DateTime?
+  endDate                   DateTime?
+  participationCount        Int?
+  collaborators             String?                    @db.Text()
+  staffs                    String?                    @db.Text()
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  workProgramDepartments    WorkProgramDepartment[]
+  workProgramFields         WorkProgramField[]
+  workProgramDocumentations WorkProgramDocumentation[]
 }
 
 model WorkProgramDepartment {
-  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id])
+  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
   workProgramId Int
-  department    Department  @relation(fields: [departmentId], references: [id])
+  department    Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId  Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@unique([workProgramId, departmentId])
 }
 
 model WorkProgramField {
-  work          WorkProgram @relation(fields: [workProgramId], references: [id])
+  work          WorkProgram @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
   workProgramId Int
-  field         Field       @relation(fields: [fieldId], references: [id])
+  field         Field       @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   fieldId       Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@unique([workProgramId, fieldId])
 }
@@ -98,22 +117,28 @@ model WorkProgramField {
 model WorkProgramDocumentation {
   id            Int         @id @default(autoincrement())
   imgUrl        String
-  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
   workProgramId Int
 }
 
 model OrganizationMeta {
   id                       Int                       @id @default(autoincrement())
   period                   Period                    @relation(fields: [periodId], references: [id])
-  periodId                 Int
-  vision                   String
+  periodId                 Int                       @unique
+  vision                   String                    @db.Text()
   hierarchyImgUrl          String
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
   organizationMetaMissions OrganizationMetaMission[]
 }
 
 model OrganizationMetaMission {
   id                 Int              @id @default(autoincrement())
-  organizationMeta   OrganizationMeta @relation(fields: [organizationMetaId], references: [id])
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  organizationMeta   OrganizationMeta @relation(fields: [organizationMetaId], references: [id], onDelete: Cascade)
   organizationMetaId Int
   value              String
   number             Int
