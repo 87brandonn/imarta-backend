@@ -1,8 +1,5 @@
 import {
-  Department,
-  Field,
   OrganizationMeta,
-  OrganizationMetaMission,
   Period,
   Prisma,
   WorkProgram,
