@@ -125,6 +125,7 @@ model WorkProgramDocumentation {
 
 model OrganizationMeta {
   id                       Int                       @id @default(autoincrement())
+  title                    String?
   period                   Period                    @relation(fields: [periodId], references: [id])
   periodId                 Int                       @unique
   vision                   String                    @db.Text()
@@ -155,4 +156,7 @@ enum AttributeType {
   IMAGE_GRID
   HERO
   HOME_EVENTS
+  HOME_HIGHLIGHTS
+  ORGANIZATION_STRUCTURE_1
+  REPOSITORY_1
 }
