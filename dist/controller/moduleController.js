@@ -27,15 +27,15 @@ const getModuleBySlug = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const data = yield prisma_1.default.module.findFirst({
             where: {
-                slug
+                slug,
             },
             include: {
                 sections: {
                     include: {
-                        attributes: true
-                    }
-                }
-            }
+                        attributes: true,
+                    },
+                },
+            },
         });
         res.status(200).send(data);
     }
@@ -45,19 +45,20 @@ const getModuleBySlug = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 const updateModuleAttributes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const data = req.body;
+    const { data } = req.body;
     try {
         const attributes = yield prisma_1.default.attribute.update({
             where: {
-                id: Number(id)
+                id: Number(id),
             },
             data: {
-                data
-            }
+                data,
+            },
         });
         res.status(200).send(attributes);
     }
     catch (err) {
+        console.error(`[updateModuleAttributesError::] `, err);
         res.status(500).send(err);
     }
 });
@@ -65,7 +66,7 @@ const addModules = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const payload = req.body;
     try {
         const data = yield prisma_1.default.module.createMany({
-            data: payload
+            data: payload,
         });
         return res.status(200).send(data);
     }
@@ -77,7 +78,7 @@ const addSections = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const payload = req.body;
     try {
         const data = yield prisma_1.default.section.createMany({
-            data: payload
+            data: payload,
         });
         return res.status(200).send(data);
     }
@@ -94,8 +95,8 @@ const addAtributes = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 sectionId: Number(id),
                 name: attribute.name,
                 label: attribute.label,
-                type: attribute.type
-            }
+                type: attribute.type,
+            },
         })));
         return res.status(200).send(data);
     }
@@ -110,5 +111,5 @@ exports.default = {
     updateModuleAttributes,
     addModules,
     addSections,
-    addAtributes
+    addAtributes,
 };

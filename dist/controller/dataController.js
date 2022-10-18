@@ -33,17 +33,17 @@ const getPeriod = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     include: {
                         workProgramDepartments: {
                             include: {
-                                department: true
-                            }
+                                department: true,
+                            },
                         },
                         workProgramFields: {
                             include: {
-                                field: true
-                            }
-                        }
-                    }
-                }
-            }
+                                field: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
         res.status(200).send(data);
     }
@@ -56,8 +56,8 @@ const addPeriod = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma_1.default.period.create({
             data: {
-                label: payload
-            }
+                label: payload,
+            },
         });
         res.status(200).send(data);
     }
@@ -71,21 +71,22 @@ const getWorkProgramByPeriod = (req, res) => __awaiter(void 0, void 0, void 0, f
         const data = yield prisma_1.default.workProgram.findMany({
             where: {
                 period: {
-                    id: Number(id)
-                }
+                    id: Number(id),
+                },
             },
             include: {
                 workProgramDepartments: {
                     include: {
-                        department: true
-                    }
+                        department: true,
+                    },
                 },
                 workProgramFields: {
                     include: {
-                        field: true
-                    }
-                }
-            }
+                        field: true,
+                    },
+                },
+                workProgramDocumentations: true,
+            },
         });
         res.status(200).send(data);
     }
@@ -94,85 +95,85 @@ const getWorkProgramByPeriod = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 const getWorkProgram = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { limit = 10, page = 0, name, description, participationCount, collaborators, staffs, departments, fields, startDate, endDate } = req.query;
+    const { limit = 10, page = 0, name, description, participationCount, collaborators, staffs, departments, fields, startDate, endDate, } = req.query;
     try {
         const where = {
             name: {
-                search: (0, formatSearchQuery_1.formatSearchQuery)(name)
+                search: (0, formatSearchQuery_1.formatSearchQuery)(name),
             },
             description: {
-                search: (0, formatSearchQuery_1.formatSearchQuery)(description)
+                search: (0, formatSearchQuery_1.formatSearchQuery)(description),
             },
             participationCount: participationCount
                 ? parseInt(participationCount, 10)
                 : undefined,
             collaborators: {
-                search: collaborators
+                search: collaborators,
             },
             staffs: {
-                search: staffs
+                search: staffs,
             },
             workProgramDepartments: departments
                 ? {
                     some: {
                         departmentId: {
-                            in: departments === null || departments === void 0 ? void 0 : departments.split(',').map((dep) => parseInt(dep, 10))
-                        }
-                    }
+                            in: departments === null || departments === void 0 ? void 0 : departments.split(",").map((dep) => parseInt(dep, 10)),
+                        },
+                    },
                 }
                 : undefined,
             workProgramFields: fields
                 ? {
                     some: {
                         fieldId: {
-                            in: fields === null || fields === void 0 ? void 0 : fields.split(',').map((field) => parseInt(field, 10))
-                        }
-                    }
+                            in: fields === null || fields === void 0 ? void 0 : fields.split(",").map((field) => parseInt(field, 10)),
+                        },
+                    },
                 }
                 : undefined,
             startDate: startDate
                 ? {
-                    gte: new Date(startDate)
+                    gte: new Date(startDate),
                 }
                 : undefined,
             endDate: endDate
                 ? {
-                    lte: new Date(endDate)
+                    lte: new Date(endDate),
                 }
-                : undefined
+                : undefined,
         };
         const [data, count] = yield prisma_1.default.$transaction([
             prisma_1.default.workProgram.findMany({
                 where,
                 orderBy: {
-                    updatedAt: 'desc'
+                    updatedAt: "desc",
                 },
                 skip: Number(page) * Number(limit),
                 take: Number(limit),
                 include: {
                     workProgramDepartments: {
                         include: {
-                            department: true
-                        }
+                            department: true,
+                        },
                     },
                     workProgramDocumentations: true,
                     period: true,
                     workProgramFields: {
                         include: {
-                            field: true
-                        }
-                    }
-                }
+                            field: true,
+                        },
+                    },
+                },
             }),
-            prisma_1.default.workProgram.count({ where })
+            prisma_1.default.workProgram.count({ where }),
         ]);
         res.status(200).send({
             data,
             meta: {
                 count,
-                page: Number(page),
-                totalPage: Math.ceil(count / Number(limit))
-            }
+                page: Number(page) + 1,
+                totalPage: Math.ceil(count / Number(limit)),
+            },
         });
     }
     catch (err) {
@@ -185,8 +186,8 @@ const getDepartmentById = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const data = yield prisma_1.default.department.findFirst({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -199,12 +200,12 @@ const getMetaById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const data = yield prisma_1.default.organizationMeta.findFirst({
             where: {
-                id: Number(id)
+                id: Number(id),
             },
             include: {
                 organizationMetaMissions: true,
-                period: true
-            }
+                period: true,
+            },
         });
         res.status(200).send(data);
     }
@@ -217,8 +218,8 @@ const getFieldById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const data = yield prisma_1.default.field.findFirst({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -231,22 +232,22 @@ const getWorkProgramById = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const data = yield prisma_1.default.workProgram.findFirst({
             where: {
-                id: Number(id)
+                id: Number(id),
             },
             include: {
                 workProgramDepartments: {
                     include: {
-                        department: true
-                    }
+                        department: true,
+                    },
                 },
                 workProgramDocumentations: true,
                 workProgramFields: {
                     include: {
-                        field: true
-                    }
+                        field: true,
+                    },
                 },
-                period: true
-            }
+                period: true,
+            },
         });
         res.status(200).send(data);
     }
@@ -262,25 +263,25 @@ const getDepartments = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 where: {
                     name: {
                         search: search
-                            ? search.replace(/[\s\n\t]/g, '_')
-                            : undefined
-                    }
+                            ? search.replace(/[\s\n\t]/g, "_")
+                            : undefined,
+                    },
                 },
                 orderBy: {
-                    updatedAt: 'desc'
+                    updatedAt: "desc",
                 },
                 skip: Number(page) * Number(limit),
-                take: Number(limit)
+                take: Number(limit),
             }),
-            prisma_1.default.department.count()
+            prisma_1.default.department.count(),
         ]);
         res.status(200).send({
             data,
             meta: {
                 count,
-                page: Number(page),
-                totalPage: Math.ceil(count / Number(limit))
-            }
+                page: Number(page) + 1,
+                totalPage: Math.ceil(count / Number(limit)),
+            },
         });
     }
     catch (err) {
@@ -295,25 +296,25 @@ const getFields = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 where: {
                     name: {
                         search: search
-                            ? search.replace(/[\s\n\t]/g, '_')
-                            : undefined
-                    }
+                            ? search.replace(/[\s\n\t]/g, "_")
+                            : undefined,
+                    },
                 },
                 orderBy: {
-                    updatedAt: 'desc'
+                    updatedAt: "desc",
                 },
                 skip: Number(page) * Number(limit),
-                take: Number(limit)
+                take: Number(limit),
             }),
-            prisma_1.default.field.count()
+            prisma_1.default.field.count(),
         ]);
         res.status(200).send({
             data,
             meta: {
                 count,
-                page: Number(page),
-                totalPage: Math.ceil(count / Number(limit))
-            }
+                page: Number(page) + 1,
+                totalPage: Math.ceil(count / Number(limit)),
+            },
         });
     }
     catch (err) {
@@ -325,10 +326,10 @@ const createOrUpdateDepartment = (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const data = yield prisma_1.default.department.upsert({
             where: {
-                id: id || -1
+                id: id || -1,
             },
             create: rest,
-            update: rest
+            update: rest,
         });
         res.status(200).send(data);
     }
@@ -344,22 +345,22 @@ const createOrUpdateMeta = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 createMany: {
                     data: missions.map((mission, i) => ({
                         number: i + 1,
-                        value: mission
-                    }))
-                }
-            }
+                        value: mission,
+                    })),
+                },
+            },
         };
         let isPeriodSame = false;
         if (id) {
             const [_, orgMeta] = yield prisma_1.default.$transaction([
                 prisma_1.default.organizationMetaMission.deleteMany({
                     where: {
-                        organizationMetaId: id
-                    }
+                        organizationMetaId: id,
+                    },
                 }),
                 prisma_1.default.organizationMeta.findFirst({
-                    where: { id }
-                })
+                    where: { id },
+                }),
             ]);
             if ((orgMeta === null || orgMeta === void 0 ? void 0 : orgMeta.periodId) === periodId) {
                 isPeriodSame = true;
@@ -368,21 +369,21 @@ const createOrUpdateMeta = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const data = yield prisma_1.default.$transaction([
             prisma_1.default.organizationMeta.upsert({
                 where: {
-                    id: id || -1
+                    id: id || -1,
                 },
                 create: Object.assign(Object.assign(Object.assign({}, rest), processedMtoNData), { period: {
                         connect: {
-                            id: periodId
-                        }
+                            id: periodId,
+                        },
                     } }),
                 update: Object.assign(Object.assign(Object.assign({}, rest), processedMtoNData), { period: isPeriodSame
                         ? undefined
                         : {
                             connect: {
-                                id: periodId
-                            }
-                        } })
-            })
+                                id: periodId,
+                            },
+                        } }),
+            }),
         ]);
         res.status(200).send(data);
     }
@@ -397,58 +398,58 @@ const createOrUpdateWorkProgam = (req, res) => __awaiter(void 0, void 0, void 0,
         const processedMtoNData = {
             period: {
                 connect: {
-                    id: periodId
-                }
+                    id: periodId,
+                },
             },
             workProgramDepartments: {
                 createMany: {
                     data: departments.map((dep) => ({
-                        departmentId: dep
-                    }))
-                }
+                        departmentId: dep,
+                    })),
+                },
             },
             workProgramFields: {
                 createMany: {
                     data: fields.map((field) => ({
-                        fieldId: field
-                    }))
-                }
+                        fieldId: field,
+                    })),
+                },
             },
             workProgramDocumentations: {
                 createMany: {
                     data: documentations.map((docu) => ({
-                        imgUrl: docu.imgUrl
-                    }))
-                }
-            }
+                        imgUrl: docu.imgUrl,
+                    })),
+                },
+            },
         };
         if (id) {
             yield prisma_1.default.$transaction([
                 prisma_1.default.workProgramDepartment.deleteMany({
                     where: {
-                        workProgramId: id
-                    }
+                        workProgramId: id,
+                    },
                 }),
                 prisma_1.default.workProgramField.deleteMany({
                     where: {
-                        workProgramId: id
-                    }
+                        workProgramId: id,
+                    },
                 }),
                 prisma_1.default.workProgramDocumentation.deleteMany({
                     where: {
-                        workProgramId: id
-                    }
-                })
+                        workProgramId: id,
+                    },
+                }),
             ]);
         }
         const data = yield prisma_1.default.$transaction([
             prisma_1.default.workProgram.upsert({
                 where: {
-                    id: id || -1
+                    id: id || -1,
                 },
                 create: Object.assign(Object.assign({}, rest), processedMtoNData),
-                update: Object.assign(Object.assign({}, rest), processedMtoNData)
-            })
+                update: Object.assign(Object.assign({}, rest), processedMtoNData),
+            }),
         ]);
         res.status(200).send(data);
     }
@@ -462,10 +463,10 @@ const createOrUpdateFields = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const data = yield prisma_1.default.field.upsert({
             where: {
-                id: id || -1
+                id: id || -1,
             },
             create: rest,
-            update: rest
+            update: rest,
         });
         res.status(200).send(data);
     }
@@ -478,8 +479,8 @@ const deleteDepartment = (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const data = yield prisma_1.default.department.delete({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -492,8 +493,8 @@ const deleteFields = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const data = yield prisma_1.default.field.delete({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -506,8 +507,8 @@ const deleteWorkProgram = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const data = yield prisma_1.default.workProgram.delete({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -521,8 +522,8 @@ const deleteMeta = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const data = yield prisma_1.default.organizationMeta.delete({
             where: {
-                id: Number(id)
-            }
+                id: Number(id),
+            },
         });
         res.status(200).send(data);
     }
@@ -536,8 +537,8 @@ const getOrganizationMeta = (req, res) => __awaiter(void 0, void 0, void 0, func
         const data = yield prisma_1.default.organizationMeta.findMany({
             include: {
                 organizationMetaMissions: true,
-                period: true
-            }
+                period: true,
+            },
         });
         res.status(200).send(data);
     }
@@ -565,5 +566,5 @@ exports.default = {
     deleteMeta,
     deleteWorkProgram,
     getDepartments,
-    getFields
+    getFields,
 };
