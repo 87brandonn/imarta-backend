@@ -1,5 +1,5 @@
-import express from 'express';
-import dataController from '../controller/dataController';
+import express from "express";
+import dataController from "../controller/dataController";
 
 const router = express.Router();
 
@@ -27,6 +27,7 @@ router.post(
   `/work-program/:id/documentation`,
   dataController.addWorkProgramDocumentation
 );
+router.get(`/documentation/:id`, dataController.getDocumentationById);
 router.get(`/work-program/:id`, dataController.getWorkProgramById);
 router.get(`/meta/:id`, dataController.getMetaById);
 router.get(`/period/:id/work-program`, dataController.getWorkProgramByPeriod);
