@@ -3,11 +3,11 @@ import {
   Period,
   Prisma,
   WorkProgram,
-  WorkProgramDocumentation,
-} from "@prisma/client";
-import { Request, Response } from "express";
-import prisma from "../prisma";
-import { formatSearchQuery } from "../utils/formatSearchQuery";
+  WorkProgramDocumentation
+} from '@prisma/client';
+import { Request, Response } from 'express';
+import prisma from '../prisma';
+import { formatSearchQuery } from '../utils/formatSearchQuery';
 
 const getPeriod = async (req: Request, res: Response) => {
   try {
@@ -17,17 +17,17 @@ const getPeriod = async (req: Request, res: Response) => {
           include: {
             workProgramDepartments: {
               include: {
-                department: true,
-              },
+                department: true
+              }
             },
             workProgramFields: {
               include: {
-                field: true,
-              },
-            },
-          },
-        },
-      },
+                field: true
+              }
+            }
+          }
+        }
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -40,8 +40,8 @@ const getPeriodById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.period.findFirst({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -54,8 +54,8 @@ const addPeriod = async (req: Request, res: Response) => {
   try {
     const data = await prisma.period.create({
       data: {
-        label: payload,
-      },
+        label: payload
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -69,22 +69,22 @@ const getWorkProgramByPeriod = async (req: Request, res: Response) => {
     const data = await prisma.workProgram.findMany({
       where: {
         period: {
-          id: Number(id),
-        },
+          id: Number(id)
+        }
       },
       include: {
         workProgramDepartments: {
           include: {
-            department: true,
-          },
+            department: true
+          }
         },
         workProgramFields: {
           include: {
-            field: true,
-          },
+            field: true
+          }
         },
-        workProgramDocumentations: true,
-      },
+        workProgramDocumentations: true
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -104,87 +104,87 @@ const getWorkProgram = async (req: Request, res: Response) => {
     departments,
     fields,
     startDate,
-    endDate,
+    endDate
   } = req.query;
   try {
     const where: Prisma.WorkProgramWhereInput = {
       name: {
-        search: formatSearchQuery(name as string),
+        search: formatSearchQuery(name as string)
       },
       description: {
-        search: formatSearchQuery(description as string),
+        search: formatSearchQuery(description as string)
       },
       participationCount: participationCount
         ? parseInt(participationCount as string, 10)
         : undefined,
       collaborators: {
-        search: collaborators as string,
+        search: collaborators as string
       },
       staffs: {
-        search: staffs as string,
+        search: staffs as string
       },
       workProgramDepartments: departments
         ? {
             some: {
               departmentId: {
-                in: (departments as string[]).map((dep) => parseInt(dep, 10)),
-              },
-            },
+                in: (departments as string[]).map((dep) => parseInt(dep, 10))
+              }
+            }
           }
         : undefined,
       workProgramFields: fields
         ? {
             some: {
               fieldId: {
-                in: (fields as string[]).map((field) => parseInt(field, 10)),
-              },
-            },
+                in: (fields as string[]).map((field) => parseInt(field, 10))
+              }
+            }
           }
         : undefined,
       startDate: startDate
         ? {
-            gte: new Date(startDate as string),
+            gte: new Date(startDate as string)
           }
         : undefined,
       endDate: endDate
         ? {
-            lte: new Date(endDate as string),
+            lte: new Date(endDate as string)
           }
-        : undefined,
+        : undefined
     };
 
     const [data, count] = await prisma.$transaction([
       prisma.workProgram.findMany({
         where,
         orderBy: {
-          updatedAt: "desc",
+          updatedAt: 'desc'
         },
         skip: Number(page) * Number(limit),
         take: Number(limit),
         include: {
           workProgramDepartments: {
             include: {
-              department: true,
-            },
+              department: true
+            }
           },
           workProgramDocumentations: true,
           period: true,
           workProgramFields: {
             include: {
-              field: true,
-            },
-          },
-        },
+              field: true
+            }
+          }
+        }
       }),
-      prisma.workProgram.count({ where }),
+      prisma.workProgram.count({ where })
     ]);
     res.status(200).send({
       data,
       meta: {
         count,
         page: Number(page) + 1,
-        totalPage: Math.ceil(count / Number(limit)),
-      },
+        totalPage: Math.ceil(count / Number(limit))
+      }
     });
   } catch (err) {
     console.error(`[getDepartmentsError]:: `, err);
@@ -197,19 +197,19 @@ const getDepartmentById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.department.findFirst({
       where: {
-        id: Number(id),
+        id: Number(id)
       },
       include: {
         workProgramDepartments: {
           include: {
             workProgram: {
               include: {
-                workProgramDocumentations: true,
-              },
-            },
-          },
-        },
-      },
+                workProgramDocumentations: true
+              }
+            }
+          }
+        }
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -222,12 +222,12 @@ const getMetaById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.organizationMeta.findFirst({
       where: {
-        id: Number(id),
+        id: Number(id)
       },
       include: {
         organizationMetaMissions: true,
-        period: true,
-      },
+        period: true
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -240,8 +240,8 @@ const getFieldById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.field.findFirst({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -254,22 +254,22 @@ const getWorkProgramById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.workProgram.findFirst({
       where: {
-        id: Number(id),
+        id: Number(id)
       },
       include: {
         workProgramDepartments: {
           include: {
-            department: true,
-          },
+            department: true
+          }
         },
         workProgramDocumentations: true,
         workProgramFields: {
           include: {
-            field: true,
-          },
+            field: true
+          }
         },
-        period: true,
-      },
+        period: true
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -282,8 +282,8 @@ const getDocumentationById = async (req: Request, res: Response) => {
   try {
     const data = await prisma.workProgramDocumentation.findFirst({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -297,28 +297,28 @@ const getDepartments = async (req: Request, res: Response) => {
     const where = {
       name: {
         search: search
-          ? (search as string).replace(/[\s\n\t]/g, "_")
-          : undefined,
-      },
+          ? (search as string).replace(/[\s\n\t]/g, '_')
+          : undefined
+      }
     };
     const [data, count] = await prisma.$transaction([
       prisma.department.findMany({
         where,
         orderBy: {
-          updatedAt: "desc",
+          updatedAt: 'desc'
         },
         skip: Number(page) * Number(limit),
-        take: Number(limit),
+        take: Number(limit)
       }),
-      prisma.department.count({ where }),
+      prisma.department.count({ where })
     ]);
     res.status(200).send({
       data,
       meta: {
         count,
         page: Number(page) + 1,
-        totalPage: Math.ceil(count / Number(limit)),
-      },
+        totalPage: Math.ceil(count / Number(limit))
+      }
     });
   } catch (err) {
     res.status(400).send(err);
@@ -331,28 +331,28 @@ const getFields = async (req: Request, res: Response) => {
     const where = {
       name: {
         search: search
-          ? (search as string).replace(/[\s\n\t]/g, "_")
-          : undefined,
-      },
+          ? (search as string).replace(/[\s\n\t]/g, '_')
+          : undefined
+      }
     };
     const [data, count] = await prisma.$transaction([
       prisma.field.findMany({
         where,
         orderBy: {
-          updatedAt: "desc",
+          updatedAt: 'desc'
         },
         skip: Number(page) * Number(limit),
-        take: Number(limit),
+        take: Number(limit)
       }),
-      prisma.field.count({ where }),
+      prisma.field.count({ where })
     ]);
     res.status(200).send({
       data,
       meta: {
         count,
         page: Number(page) + 1,
-        totalPage: Math.ceil(count / Number(limit)),
-      },
+        totalPage: Math.ceil(count / Number(limit))
+      }
     });
   } catch (err) {
     res.status(400).send(err);
@@ -364,10 +364,10 @@ const createOrUpdateDepartment = async (req: Request, res: Response) => {
   try {
     const data = await prisma.department.upsert({
       where: {
-        id: id || -1,
+        id: id || -1
       },
       create: rest,
-      update: rest,
+      update: rest
     });
     res.status(200).send(data);
   } catch (err) {
@@ -393,10 +393,10 @@ const createOrUpdateMeta = async (
         createMany: {
           data: missions.map((mission, i) => ({
             number: i + 1,
-            value: mission,
-          })),
-        },
-      },
+            value: mission
+          }))
+        }
+      }
     };
 
     let isPeriodSame = false;
@@ -405,12 +405,12 @@ const createOrUpdateMeta = async (
       const [_, orgMeta] = await prisma.$transaction([
         prisma.organizationMetaMission.deleteMany({
           where: {
-            organizationMetaId: id,
-          },
+            organizationMetaId: id
+          }
         }),
         prisma.organizationMeta.findFirst({
-          where: { id },
-        }),
+          where: { id }
+        })
       ]);
       if (orgMeta?.periodId === periodId) {
         isPeriodSame = true;
@@ -419,16 +419,16 @@ const createOrUpdateMeta = async (
     const data = await prisma.$transaction([
       prisma.organizationMeta.upsert({
         where: {
-          id: id || -1,
+          id: id || -1
         },
         create: {
           ...rest,
           ...processedMtoNData,
           period: {
             connect: {
-              id: periodId,
-            },
-          },
+              id: periodId
+            }
+          }
         },
         update: {
           ...rest,
@@ -437,11 +437,11 @@ const createOrUpdateMeta = async (
             ? undefined
             : {
                 connect: {
-                  id: periodId,
-                },
-              },
-        },
-      }),
+                  id: periodId
+                }
+              }
+        }
+      })
     ]);
     res.status(200).send(data);
   } catch (err) {
@@ -468,65 +468,65 @@ const createOrUpdateWorkProgam = async (
     const processedMtoNData = {
       period: {
         connect: {
-          id: periodId as number,
-        },
+          id: periodId as number
+        }
       },
       workProgramDepartments: {
         createMany: {
           data: departments.map((dep) => ({
-            departmentId: dep,
-          })),
-        },
+            departmentId: dep
+          }))
+        }
       },
       workProgramFields: {
         createMany: {
           data: fields.map((field) => ({
-            fieldId: field,
-          })),
-        },
+            fieldId: field
+          }))
+        }
       },
       workProgramDocumentations: {
         createMany: {
           data: documentations.map((docu) => ({
-            imgUrl: docu.imgUrl,
-          })),
-        },
-      },
+            imgUrl: docu.imgUrl
+          }))
+        }
+      }
     };
 
     if (id) {
       await prisma.$transaction([
         prisma.workProgramDepartment.deleteMany({
           where: {
-            workProgramId: id,
-          },
+            workProgramId: id
+          }
         }),
         prisma.workProgramField.deleteMany({
           where: {
-            workProgramId: id,
-          },
+            workProgramId: id
+          }
         }),
         prisma.workProgramDocumentation.deleteMany({
           where: {
-            workProgramId: id,
-          },
-        }),
+            workProgramId: id
+          }
+        })
       ]);
     }
     const data = await prisma.$transaction([
       prisma.workProgram.upsert({
         where: {
-          id: id || -1,
+          id: id || -1
         },
         create: {
           ...rest,
-          ...processedMtoNData,
+          ...processedMtoNData
         },
         update: {
           ...rest,
-          ...processedMtoNData,
-        },
-      }),
+          ...processedMtoNData
+        }
+      })
     ]);
     res.status(200).send(data);
   } catch (err) {
@@ -540,10 +540,10 @@ const createOrUpdateFields = async (req: Request, res: Response) => {
   try {
     const data = await prisma.field.upsert({
       where: {
-        id: id || -1,
+        id: id || -1
       },
       create: rest,
-      update: rest,
+      update: rest
     });
     res.status(200).send(data);
   } catch (err) {
@@ -556,8 +556,22 @@ const deleteDepartment = async (req: Request, res: Response) => {
   try {
     const data = await prisma.department.delete({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
+    });
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+const deletePeriod = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const data = await prisma.period.delete({
+      where: {
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -570,8 +584,8 @@ const deleteFields = async (req: Request, res: Response) => {
   try {
     const data = await prisma.field.delete({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -584,8 +598,8 @@ const deleteWorkProgram = async (req: Request, res: Response) => {
   try {
     const data = await prisma.workProgram.delete({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -599,8 +613,8 @@ const deleteMeta = async (req: Request, res: Response) => {
   try {
     const data = await prisma.organizationMeta.delete({
       where: {
-        id: Number(id),
-      },
+        id: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -613,12 +627,12 @@ const getOrganizationMeta = async (req: Request, res: Response) => {
   try {
     const data = await prisma.organizationMeta.findMany({
       orderBy: {
-        updatedAt: "desc",
+        updatedAt: 'desc'
       },
       include: {
         organizationMetaMissions: true,
-        period: true,
-      },
+        period: true
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -635,8 +649,8 @@ const getWorkProgramDocumentationsByWorkProgramId = async (
   try {
     const data = await prisma.workProgramDocumentation.findMany({
       where: {
-        workProgramId: Number(id),
-      },
+        workProgramId: Number(id)
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -652,8 +666,8 @@ const addWorkProgramDocumentation = async (req: Request, res: Response) => {
     const data = await prisma.workProgramDocumentation.create({
       data: {
         workProgramId: Number(id),
-        imgUrl,
-      },
+        imgUrl
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -669,47 +683,47 @@ const getWorkProgramDocumentations = async (req: Request, res: Response) => {
       workProgram: {
         id: workPrograms?.length
           ? {
-              in: (workPrograms as string[]).map((wp) => parseInt(wp, 10)),
+              in: (workPrograms as string[]).map((wp) => parseInt(wp, 10))
             }
           : undefined,
         workProgramDepartments: departments?.length
           ? {
               some: {
                 departmentId: {
-                  in: (departments as string[]).map((dp) => parseInt(dp, 10)),
-                },
-              },
+                  in: (departments as string[]).map((dp) => parseInt(dp, 10))
+                }
+              }
             }
           : undefined,
         workProgramFields: fields?.length
           ? {
               some: {
                 fieldId: {
-                  in: (fields as string[]).map((field) => parseInt(field, 10)),
-                },
-              },
+                  in: (fields as string[]).map((field) => parseInt(field, 10))
+                }
+              }
             }
-          : undefined,
-      },
+          : undefined
+      }
     };
     const [data, count] = await prisma.$transaction([
       prisma.workProgramDocumentation.findMany({
         where,
         orderBy: {
-          updatedAt: "desc",
+          updatedAt: 'desc'
         },
         skip: Number(page) * Number(limit),
-        take: Number(limit),
+        take: Number(limit)
       }),
-      prisma.workProgramDocumentation.count({ where }),
+      prisma.workProgramDocumentation.count({ where })
     ]);
     res.status(200).send({
       data,
       meta: {
         count,
         page: Number(page) + 1,
-        totalPage: Math.ceil(count / Number(limit)),
-      },
+        totalPage: Math.ceil(count / Number(limit))
+      }
     });
   } catch (err) {
     console.error(`[getWorkProgramDocumentationsError::] `, err);
@@ -725,11 +739,11 @@ const getDepartmentsByPeriod = async (req: Request, res: Response) => {
         workProgramDepartments: {
           some: {
             workProgram: {
-              periodId: Number(id),
-            },
-          },
-        },
-      },
+              periodId: Number(id)
+            }
+          }
+        }
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -745,10 +759,10 @@ const getWorkProgramByDepartmentId = async (req: Request, res: Response) => {
       where: {
         workProgramDepartments: {
           some: {
-            departmentId: Number(id),
-          },
-        },
-      },
+            departmentId: Number(id)
+          }
+        }
+      }
     });
     res.status(200).send(data);
   } catch (err) {
@@ -778,10 +792,11 @@ export default {
   createOrUpdateMeta,
   createOrUpdateFields,
   deleteDepartment,
+  deletePeriod,
   deleteFields,
   deleteMeta,
   deleteWorkProgram,
   getDepartments,
   getFields,
-  getDocumentationById,
+  getDocumentationById
 };

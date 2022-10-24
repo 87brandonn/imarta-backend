@@ -10,6 +10,20 @@ app.use(cors());
 app.use(express.json());
 app.use(`/`, router);
 
+/** Script to migrate field and department */
+// const data = await prisma.field.createMany({
+//   data: prokerData.flatMap((proker) =>
+//     proker['Bidang -  Ketua Bid.'].split(' | ').map((department) => {
+//       const [departmentName, departmentLeader] = department.split(': ');
+//       return {
+//         name: departmentName,
+//         leader: departmentLeader
+//       };
+//     })
+//   ),
+//   skipDuplicates: true
+// });
+
 app.post(
   `/migrate`,
   async (
@@ -61,7 +75,7 @@ app.post(
       };
 
       const data = await Promise.all(
-        prokerData.map(async (proker) => {
+        prokerData.map((proker) => {
           const processedDepartmentData = [];
           const processedFieldData = [];
 
@@ -85,7 +99,12 @@ app.post(
             }
           }
 
-          return await prisma.workProgram.create({
+          // return {
+          //   processedDepartmentData,
+          //   processedFieldData
+          // };
+
+          return prisma.workProgram.create({
             data: {
               name: proker['Program Kerja'],
               collaborators: proker['Kolaborator, Mentor, atau Pembicara'],

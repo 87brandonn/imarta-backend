@@ -76,7 +76,7 @@ model Field {
 
 model WorkProgram {
   id                        Int                        @id @default(autoincrement())
-  period                    Period?                    @relation(fields: [periodId], references: [id])
+  period                    Period?                    @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId                  Int?
   name                      String
   description               String?                    @db.Text()
@@ -126,7 +126,7 @@ model WorkProgramDocumentation {
 model OrganizationMeta {
   id                       Int                       @id @default(autoincrement())
   title                    String?
-  period                   Period                    @relation(fields: [periodId], references: [id])
+  period                   Period                    @relation(fields: [periodId], references: [id], onDelete: Cascade)
   periodId                 Int                       @unique
   vision                   String                    @db.Text()
   hierarchyImgUrl          String

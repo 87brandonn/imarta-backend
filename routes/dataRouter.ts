@@ -1,5 +1,5 @@
-import express from "express";
-import dataController from "../controller/dataController";
+import express from 'express';
+import dataController from '../controller/dataController';
 
 const router = express.Router();
 
@@ -38,6 +38,7 @@ router.post(`/department`, dataController.createOrUpdateDepartment);
 router.post(`/field`, dataController.createOrUpdateFields);
 router.post(`/meta`, dataController.createOrUpdateMeta);
 router.delete(`/work-program/:id`, dataController.deleteWorkProgram);
+router.delete(`/period/:id`, dataController.deletePeriod);
 router.delete(`/department/:id`, dataController.deleteDepartment);
 router.delete(`/meta/:id`, dataController.deleteMeta);
 router.delete(`/field/:id`, dataController.deleteFields);
