@@ -1,6 +1,6 @@
-import { AttributeType } from "@prisma/client";
-import { Request, Response } from "express";
-import prisma from "../prisma";
+import { AttributeType } from '@prisma/client';
+import { Request, Response } from 'express';
+import prisma from '../prisma';
 
 const getAllModule = async (req: Request, res: Response) => {
   try {
@@ -16,18 +16,19 @@ const getModuleBySlug = async (req: Request, res: Response) => {
   try {
     const data = await prisma.module.findFirst({
       where: {
-        slug,
+        slug
       },
       include: {
         sections: {
           include: {
-            attributes: true,
-          },
-        },
-      },
+            attributes: true
+          }
+        }
+      }
     });
     res.status(200).send(data);
   } catch (err) {
+    console.error(`[getSlugError::] `, err);
     res.status(500).send(err);
   }
 };
@@ -39,11 +40,11 @@ const updateModuleAttributes = async (req: Request, res: Response) => {
   try {
     const attributes = await prisma.attribute.update({
       where: {
-        id: Number(id),
+        id: Number(id)
       },
       data: {
-        data,
-      },
+        data
+      }
     });
 
     res.status(200).send(attributes);
@@ -57,7 +58,7 @@ const addModules = async (req: Request, res: Response) => {
   const payload = req.body;
   try {
     const data = await prisma.module.createMany({
-      data: payload,
+      data: payload
     });
     return res.status(200).send(data);
   } catch (err) {
@@ -69,7 +70,7 @@ const addSections = async (req: Request, res: Response) => {
   const payload = req.body;
   try {
     const data = await prisma.section.createMany({
-      data: payload,
+      data: payload
     });
     return res.status(200).send(data);
   } catch (err) {
@@ -89,8 +90,8 @@ const addAtributes = async (req: Request, res: Response) => {
               sectionId: Number(id),
               name: attribute.name,
               label: attribute.label,
-              type: attribute.type,
-            },
+              type: attribute.type
+            }
           })
       )
     );
@@ -107,5 +108,5 @@ export default {
   updateModuleAttributes,
   addModules,
   addSections,
-  addAtributes,
+  addAtributes
 };
