@@ -115,11 +115,12 @@ model WorkProgramField {
 }
 
 model WorkProgramDocumentation {
-  id            Int         @id @default(autoincrement())
+  id            Int               @id @default(autoincrement())
   imgUrl        String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
+  fileType      DocumentationType @default(IMAGE)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  workProgram   WorkProgram       @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
   workProgramId Int
 }
 
@@ -160,4 +161,10 @@ enum AttributeType {
   HOME_HIGHLIGHTS
   ORGANIZATION_STRUCTURE_1
   REPOSITORY_1
+}
+
+enum DocumentationType {
+  IMAGE
+  VIDEO
+  YOUTUBE
 }

@@ -24,6 +24,63 @@ app.use(`/`, router);
 //   skipDuplicates: true
 // });
 
+app.post(`/migrate/image`, async (req: Request, res: Response) => {
+  try {
+    const data = await prisma.attribute.findMany({
+      where: {
+        OR: [
+          {
+            type: 'HERO'
+          },
+          {
+            type: 'IMAGE_BIG'
+          },
+          {
+            type: 'IMAGE_SMALL'
+          },
+          {
+            type: 'IMAGE_GRID'
+          },
+          {
+            type: 'SWIPER_NORMAL'
+          },
+          {
+            type: 'SWIPER_CENTERED'
+          }
+        ]
+      }
+    });
+    const modifiedImage = await prisma.$transaction(
+      data.map((attr) =>
+        prisma.attribute.update({
+          where: {
+            id: attr.id
+          },
+          data: {
+            data:
+              attr.type === 'IMAGE_GRID' ||
+              attr.type === 'IMAGE_GRID_2' ||
+              attr.type === 'SWIPER_CENTERED' ||
+              attr.type === 'SWIPER_NORMAL'
+                ? (attr.data as object[])?.map((imgGrid) => ({
+                    ...imgGrid,
+                    type: 'image'
+                  }))
+                : {
+                    ...((attr.data as object) || {}),
+                    type: 'image'
+                  }
+          }
+        })
+      )
+    );
+    res.status(200).send(modifiedImage);
+  } catch (err) {
+    console.error(`[errorImageMigrate::] `, err);
+    res.status(400).send(err);
+  }
+});
+
 app.post(
   `/migrate`,
   async (
