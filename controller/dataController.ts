@@ -489,7 +489,7 @@ const createOrUpdateWorkProgam = async (
         createMany: {
           data: documentations.map((docu) => ({
             imgUrl: docu.imgUrl,
-            type: docu.type
+            fileType: docu.fileType
           }))
         }
       }
