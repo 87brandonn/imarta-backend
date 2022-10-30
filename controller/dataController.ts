@@ -662,12 +662,13 @@ const getWorkProgramDocumentationsByWorkProgramId = async (
 
 const addWorkProgramDocumentation = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { imgUrl } = req.body;
+  const { imgUrl, type } = req.body;
   try {
     const data = await prisma.workProgramDocumentation.create({
       data: {
         workProgramId: Number(id),
-        imgUrl
+        imgUrl,
+        fileType: type
       }
     });
     res.status(200).send(data);
