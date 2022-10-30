@@ -678,9 +678,16 @@ const addWorkProgramDocumentation = async (req: Request, res: Response) => {
 };
 
 const getWorkProgramDocumentations = async (req: Request, res: Response) => {
-  const { limit = 10, page = 0, departments, fields, workPrograms } = req.query;
+  const {
+    limit = 10,
+    page = 0,
+    departments,
+    fields,
+    workPrograms,
+    accept
+  } = req.query;
   try {
-    const where = {
+    const where: Prisma.WorkProgramDocumentationWhereInput | undefined = {
       workProgram: {
         id: workPrograms?.length
           ? {
@@ -705,7 +712,18 @@ const getWorkProgramDocumentations = async (req: Request, res: Response) => {
               }
             }
           : undefined
-      }
+      },
+      fileType: !accept?.length
+        ? undefined
+        : {
+            in: (accept as string[]).map((acceptParameter) =>
+              acceptParameter === 'image'
+                ? 'IMAGE'
+                : acceptParameter === 'video'
+                ? 'VIDEO'
+                : 'YOUTUBE'
+            )
+          }
     };
     const [data, count] = await prisma.$transaction([
       prisma.workProgramDocumentation.findMany({
