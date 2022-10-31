@@ -84,12 +84,12 @@ model WorkProgram {
   endDate                   DateTime?
   participationCount        Int?
   collaborators             String?                    @db.Text()
-  staffs                    String?                    @db.Text()
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @updatedAt
   workProgramDepartments    WorkProgramDepartment[]
   workProgramFields         WorkProgramField[]
   workProgramDocumentations WorkProgramDocumentation[]
+  workProgramStaffs         WorkProgramStaff[]
 }
 
 model WorkProgramDepartment {
@@ -101,6 +101,14 @@ model WorkProgramDepartment {
   updatedAt     DateTime    @updatedAt
 
   @@unique([workProgramId, departmentId])
+}
+
+model WorkProgramStaff {
+  id            Int         @id @default(autoincrement())
+  workProgram   WorkProgram @relation(fields: [workProgramId], references: [id], onDelete: Cascade)
+  workProgramId Int
+  name          String
+  isLead        Boolean     @default(false)
 }
 
 model WorkProgramField {

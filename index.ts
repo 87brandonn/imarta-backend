@@ -81,6 +81,35 @@ app.post(`/migrate/image`, async (req: Request, res: Response) => {
   }
 });
 
+// app.post(`/migrate/staffs`, async (req: Request, res: Response) => {
+//   try {
+//     const workPrograms = await prisma.workProgram.findMany();
+//     const data = await prisma.$transaction(
+//       workPrograms.flatMap((workProgram) =>
+//         workProgram.staffs?.length
+//           ? workProgram.staffs?.split(', ').map((staff, indexStaff) =>
+//               prisma.workProgramStaff.create({
+//                 data: {
+//                   workProgram: {
+//                     connect: {
+//                       id: workProgram.id
+//                     }
+//                   },
+//                   name: staff,
+//                   isLead: indexStaff === 0 ? true : false
+//                 }
+//               })
+//             )
+//           : []
+//       )
+//     );
+//     res.status(200).send(data);
+//   } catch (err) {
+//     console.error(`[errorMigrateStaffs]:: `, err);
+//     res.status(400).send('Something went wrong');
+//   }
+// });
+
 app.post(
   `/migrate`,
   async (
@@ -165,7 +194,7 @@ app.post(
             data: {
               name: proker['Program Kerja'],
               collaborators: proker['Kolaborator, Mentor, atau Pembicara'],
-              staffs: proker.Pengurus,
+              // staffs: proker.Pengurus,
               startDate: isDate(proker.Tanggal.split(' - ')[0])
                 ? new Date(proker.Tanggal.split(' - ')[0])
                 : undefined,

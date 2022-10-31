@@ -3,7 +3,8 @@ import {
   Period,
   Prisma,
   WorkProgram,
-  WorkProgramDocumentation
+  WorkProgramDocumentation,
+  WorkProgramStaff
 } from '@prisma/client';
 import { Request, Response } from 'express';
 import prisma from '../prisma';
@@ -120,9 +121,15 @@ const getWorkProgram = async (req: Request, res: Response) => {
       collaborators: {
         search: collaborators as string
       },
-      staffs: {
-        search: staffs as string
-      },
+      workProgramStaffs: staffs
+        ? {
+            some: {
+              name: {
+                in: (staffs as string).split(',')
+              }
+            }
+          }
+        : undefined,
       workProgramDepartments: departments
         ? {
             some: {
@@ -262,6 +269,7 @@ const getWorkProgramById = async (req: Request, res: Response) => {
             department: true
           }
         },
+        workProgramStaffs: true,
         workProgramDocumentations: true,
         workProgramFields: {
           include: {
@@ -458,11 +466,12 @@ const createOrUpdateWorkProgam = async (
       departments: number[];
       fields: number[];
       documentations: WorkProgramDocumentation[];
+      staffs: WorkProgramStaff[];
     }
   >,
   res: Response
 ) => {
-  const { id, departments, fields, periodId, documentations, ...rest } =
+  const { id, departments, fields, periodId, staffs, documentations, ...rest } =
     req.body;
   try {
     const processedMtoNData = {
@@ -475,6 +484,14 @@ const createOrUpdateWorkProgam = async (
         createMany: {
           data: departments.map((dep) => ({
             departmentId: dep
+          }))
+        }
+      },
+      workProgramStaffs: {
+        createMany: {
+          data: staffs.map((staff) => ({
+            name: staff.name,
+            isLead: staff.isLead
           }))
         }
       },
@@ -508,6 +525,11 @@ const createOrUpdateWorkProgam = async (
           }
         }),
         prisma.workProgramDocumentation.deleteMany({
+          where: {
+            workProgramId: id
+          }
+        }),
+        prisma.workProgramStaff.deleteMany({
           where: {
             workProgramId: id
           }
