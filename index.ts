@@ -201,11 +201,7 @@ app.post(
               endDate: isDate(proker.Tanggal.split(' - ')[1])
                 ? new Date(proker.Tanggal.split(' - ')[1])
                 : undefined,
-              participationCount: Number.isNaN(
-                parseInt(proker.Jumlah.split(' Peserta')[0], 10)
-              )
-                ? 0
-                : parseInt(proker.Jumlah.split(' Peserta')[0], 10),
+              participationCount: proker.Jumlah.split(' Peserta')?.[0],
               periodId: mappedPeriodData[proker.Periode],
               workProgramDepartments: {
                 createMany: {

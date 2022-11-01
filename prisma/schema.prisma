@@ -82,7 +82,7 @@ model WorkProgram {
   description               String?                    @db.Text()
   startDate                 DateTime?
   endDate                   DateTime?
-  participationCount        Int?
+  participationCount        String?
   collaborators             String?                    @db.Text()
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @updatedAt
