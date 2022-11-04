@@ -115,7 +115,9 @@ const getWorkProgram = async (req: Request, res: Response) => {
       description: {
         search: formatSearchQuery(description as string)
       },
-      participationCount: participationCount as string,
+      participationCount: participationCount?.length
+        ? (participationCount as string)
+        : undefined,
       collaborators: {
         search: collaborators as string
       },
