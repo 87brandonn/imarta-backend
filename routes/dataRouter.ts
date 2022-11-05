@@ -4,7 +4,6 @@ import dataController from '../controller/dataController';
 const router = express.Router();
 
 router.get(`/period`, dataController.getPeriod);
-router.post(`/period`, dataController.addPeriod);
 router.get(`/department`, dataController.getDepartments);
 router.get(
   `/department/:id/work-program`,
@@ -35,6 +34,7 @@ router.get(`/period/:id/department`, dataController.getDepartmentsByPeriod);
 router.get(`/period/:id`, dataController.getPeriodById);
 router.post(`/work-program`, dataController.createOrUpdateWorkProgam);
 router.post(`/department`, dataController.createOrUpdateDepartment);
+router.post(`/period`, dataController.createOrUpdatePeriod);
 router.post(`/field`, dataController.createOrUpdateFields);
 router.post(`/meta`, dataController.createOrUpdateMeta);
 router.delete(`/work-program/:id`, dataController.deleteWorkProgram);

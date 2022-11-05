@@ -574,6 +574,22 @@ const createOrUpdateFields = async (req: Request, res: Response) => {
   }
 };
 
+const createOrUpdatePeriod = async (req: Request, res: Response) => {
+  const { id, ...rest } = req.body;
+  try {
+    const data = await prisma.period.upsert({
+      where: {
+        id: id || -1
+      },
+      create: rest,
+      update: rest
+    });
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 const deleteDepartment = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -832,6 +848,7 @@ export default {
   addWorkProgramDocumentation,
   createOrUpdateWorkProgam,
   createOrUpdateMeta,
+  createOrUpdatePeriod,
   createOrUpdateFields,
   deleteDepartment,
   deletePeriod,
