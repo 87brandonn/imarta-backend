@@ -169,6 +169,7 @@ enum AttributeType {
   HOME_HIGHLIGHTS
   ORGANIZATION_STRUCTURE_1
   REPOSITORY_1
+  IMAGE_GRID_NESTED
 }
 
 enum DocumentationType {
