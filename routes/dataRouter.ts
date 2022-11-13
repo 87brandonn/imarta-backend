@@ -13,6 +13,7 @@ router.get(`/department/:id`, dataController.getDepartmentById);
 router.get(`/field/:id`, dataController.getFieldById);
 router.get(`/field`, dataController.getFields);
 router.get(`/meta`, dataController.getOrganizationMeta);
+router.get(`/work-program/all`, dataController.getAllWorkProgram);
 router.get(`/work-program`, dataController.getWorkProgram);
 router.get(
   `/work-program-documentations`,

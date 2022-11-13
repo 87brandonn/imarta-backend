@@ -93,6 +93,15 @@ const getWorkProgramByPeriod = async (req: Request, res: Response) => {
   }
 };
 
+const getAllWorkProgram = async (req: Request, res: Response) => {
+  try {
+    const data = await prisma.workProgram.findMany();
+    res.status(200).send(data);
+  } catch (err) {
+    console.error(`[errorGetAllWorkProgram::] `, err);
+  }
+};
+
 const getWorkProgram = async (req: Request, res: Response) => {
   const {
     limit = 10,
@@ -854,6 +863,7 @@ export default {
   deletePeriod,
   deleteFields,
   deleteMeta,
+  getAllWorkProgram,
   deleteWorkProgram,
   getDepartments,
   getFields,
