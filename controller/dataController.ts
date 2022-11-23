@@ -226,6 +226,11 @@ const getDepartmentById = async (req: Request, res: Response) => {
                     field: true
                   }
                 },
+                workProgramDepartments: {
+                  include: {
+                    department: true
+                  }
+                },
                 workProgramStaffs: true
               }
             }
