@@ -223,6 +223,11 @@ const getDepartmentById = async (req: Request, res: Response) => {
                 workProgram: {
                   OR: [
                     {
+                      name: {
+                        search: search as string
+                      }
+                    },
+                    {
                       workProgramFields: {
                         some: {
                           field: {
