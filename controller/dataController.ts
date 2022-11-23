@@ -210,6 +210,7 @@ const getWorkProgram = async (req: Request, res: Response) => {
 
 const getDepartmentById = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { search } = req.query;
   try {
     const data = await prisma.department.findFirst({
       where: {
@@ -217,6 +218,57 @@ const getDepartmentById = async (req: Request, res: Response) => {
       },
       include: {
         workProgramDepartments: {
+          where: search
+            ? {
+                workProgram: {
+                  OR: [
+                    {
+                      workProgramFields: {
+                        some: {
+                          field: {
+                            leader: {
+                              search: search as string
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      workProgramDepartments: {
+                        some: {
+                          department: {
+                            leader: {
+                              search: search as string
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      collaborators: {
+                        search: search as string
+                      }
+                    },
+                    {
+                      period: {
+                        label: {
+                          search: search as string
+                        }
+                      }
+                    },
+                    {
+                      workProgramStaffs: {
+                        some: {
+                          name: {
+                            search: search as string
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            : undefined,
           include: {
             workProgram: {
               include: {
